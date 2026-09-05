@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PARTICIPANT
+  VALIDATOR
+}
+
+enum Pillar {
+  COMPASSION
+  COMMUNITY
+  CONTRIBUTION
+  COURAGE
+}
+
+enum ActStatus {
+  PENDING
+  VALIDATED
+  REJECTED
+}
+
+model Institution {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  validators User[]
+  acts       Act[]
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role
+  createdAt    DateTime @default(now())
+
+  // Only set when role is VALIDATOR — the institution they confirm acts for.
+  institutionId String?
+  institution   Institution? @relation(fields: [institutionId], references: [id])
+
+  actsSubmitted Act[] @relation("ActsSubmitted")
+  actsValidated Act[] @relation("ActsValidated")
+}
+
+model Act {
+  id          String    @id @default(cuid())
+  description String
+  status      ActStatus @default(PENDING)
+  pillar      Pillar?
+  createdAt   DateTime  @default(now())
+  validatedAt DateTime?
+
+  participantId String
+  participant   User   @relation("ActsSubmitted", fields: [participantId], references: [id])
+
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  validatorId String?
+  validator   User?   @relation("ActsValidated", fields: [validatorId], references: [id])
+}

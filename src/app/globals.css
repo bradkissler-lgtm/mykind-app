@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+:root {
+  --cream: #fbf5ea;
+  --cream-dim: #f3eada;
+  --ink: #2a2420;
+  --teal: #1e4b49;
+  --teal-dark: #163736;
+  --terracotta: #d9714a;
+  --terracotta-dark: #c15e39;
+  --gold: #e3a857;
+  --line: #e4d9c4;
+  --white: #ffffff;
+
+  --background: var(--cream);
+  --foreground: var(--ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-cream: var(--cream);
+  --color-cream-dim: var(--cream-dim);
+  --color-ink: var(--ink);
+  --color-teal: var(--teal);
+  --color-teal-dark: var(--teal-dark);
+  --color-terracotta: var(--terracotta);
+  --color-terracotta-dark: var(--terracotta-dark);
+  --color-gold: var(--gold);
+  --color-line: var(--line);
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+@layer components {
+  .input {
+    @apply w-full px-4 py-2.5 rounded-lg border border-line bg-cream-dim text-ink
+      focus:outline-none focus:ring-2 focus:ring-terracotta;
+  }
+}

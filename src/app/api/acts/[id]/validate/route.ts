@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { originMismatchResponse } from "@/lib/security";
 import type { Pillar } from "@prisma/client";
 
 const VALID_PILLARS: Pillar[] = ["COMPASSION", "COMMUNITY", "CONTRIBUTION", "COURAGE"];
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const originError = originMismatchResponse(req);
+  if (originError) return originError;
+
   const session = await getSession();
   if (!session || session.role !== "VALIDATOR") {
     return NextResponse.json({ error: "Only validators can confirm acts." }, { status: 403 });

@@ -2,12 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { createSession } from "@/lib/auth";
+import { originMismatchResponse } from "@/lib/security";
 
 export async function POST(req: NextRequest) {
-  const { email, password } = (await req.json()) as {
+  const originError = originMismatchResponse(req);
+  if (originError) return originError;
+
+  const { email: rawEmail, password } = (await req.json()) as {
     email?: string;
     password?: string;
   };
+  const email = rawEmail?.trim().toLowerCase();
 
   if (!email || !password) {
     return NextResponse.json({ error: "Email and password are required." }, { status: 400 });

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { createHmac, timingSafeEqual } from "crypto";
 import type { Role } from "@prisma/client";
+import { assertSessionSecretIsSafe } from "./security";
 
 const COOKIE_NAME = "mykind_session";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 days
@@ -10,12 +11,10 @@ export type SessionPayload = {
   role: Role;
 };
 
+assertSessionSecretIsSafe();
+
 function getSecret(): string {
-  const secret = process.env.SESSION_SECRET;
-  if (!secret) {
-    throw new Error("SESSION_SECRET is not set");
-  }
-  return secret;
+  return process.env.SESSION_SECRET!;
 }
 
 function sign(value: string): string {
